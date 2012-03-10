@@ -8,7 +8,10 @@ class MoviesController < ApplicationController
 
   def index
     @sort_by = params[:sort]
-    @movies = Movie.order(params[:sort]).all
+    @all_ratings = Movie.ratings
+    @ratings = (params[:ratings] && !params[:ratings].empty?) ? params[:ratings].keys : @all_ratings 
+    @movies = Movie.order(params[:sort]).where({ :rating => @ratings }).all
+
   end
 
 
