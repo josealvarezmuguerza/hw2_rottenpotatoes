@@ -7,13 +7,18 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @sort_by = params[:sort]
+    if ((session[:sort] || session[:ratings]) && !params[:sort] && !params[:ratings])
+      redirect_to url_for(:sort => session[:sort], :ratings => session[:ratings])
+    end
+    session[:sort] = params[:sort]
+    session[:ratings] = params[:ratings]
+
+
     @all_ratings = Movie.ratings
-    @ratings = (params[:ratings] && !params[:ratings].empty?) ? params[:ratings].keys : @all_ratings 
-    @movies = Movie.order(params[:sort]).where({ :rating => @ratings }).all
+    @movies = Movie.order(params[:sort]).where({ :rating => params[:ratings] == nil ? @all_ratings : params[:ratings].keys }).all
 
   end
-
+   
 
   def new
     # default: render 'new' template
